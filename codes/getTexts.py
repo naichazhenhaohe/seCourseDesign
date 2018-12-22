@@ -6,7 +6,6 @@
 对sthml文件预处理 获取页面的keyword/title/url以及主要的新闻内容并生成对应的txt文件 ,保存于target目录下
 
 Step Two
-
 """
 
 import os

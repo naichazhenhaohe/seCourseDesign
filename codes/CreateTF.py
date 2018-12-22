@@ -1,36 +1,53 @@
 # -*- coding: utf-8 -*-
-'''
-@author hankai liu
+"""
+@author: kwonjiyong
 
-计算tf 存于tfidfList.txt
-并记录每篇文章中出现的频率最高的20个词 存于wordList.txt
-'''
+计算每篇文章中 tfidf值最高的20个词，并记录
+
+Step Six
+"""
 
 import jieba
 import jieba.analyse
 import os
 
 
-def write_word_list_file(s, filepath):    # 将分词写入文件，一个网页对应一行
-    fp = open(filepath, "a+")
-    fp.writelines(str(s)+' ')
+def writeFiles(top):
+    lines = []
+    wordList = []
+    tfidfs = []
+    for item in top:
+        line = ''
+        words = ''
+        tfidf = ''
+        for i in range(len(item)):
+            line += item[i][0] + ' ' + str(item[i][1]) + ' ' 
+            words += item[i][0] + ' '
+            tfidf += str(item[i][1]) + ' '
+        lines.append(line)
+        wordList.append(words)
+        tfidfs.append(tfidf)
+    with open('../docs/tfidf/tfidf-words.txt','w') as wf:
+        con = '\n'.join(lines)
+        wf.write(con)
+    with open('../docs/tfidf/words.txt','w') as wwf:
+        con = '\n'.join(wordList)
+        wwf.write(con)
+    with open('../docs/tfidf/tfidf.txt','w') as twf:
+        con = '\n'.join(tfidfs)
+        twf.write(con)
 
-def write_line():
-    fp = open("../docs/wordList.txt", "a+")
-    fp_tf = open('../docs/tfidfList.txt', "a+")
-    fp.writelines('\n')
-    fp_tf.writelines('\n')
-
-path = '../docs/segmented/'
-files = os.listdir(path)
-for file in files:
-    name = file.title()
-    fp = open(path+file,'r',encoding='utf-8')
-    con = fp.readlines()
-    content = con[-1]
-    sentence = name[:-4] + content
-    topk = jieba.analyse.extract_tags(sentence,topK=20,withWeight=True,allowPOS=(),withFlag=False)
-    for top in topk:#将分词和tf-idf分别存入两个文件
-        write_word_list_file(top[0],'../docs/wordList.txt')
-        write_word_list_file(top[1],'../docs/tfidfList.txt')
-    write_line()
+def getTfidf():
+    path = '../docs/segmented/'
+    files = os.listdir(path)
+    top = []
+    for file in files:
+        #windows
+        with open(path+file, 'r', encoding='gbk') as f:
+        #linux
+#        with open(path+file, 'r', encoding='utf8') as f:
+            content = f.readlines()[-1]
+            top.append(jieba.analyse.extract_tags(content,topK=20,withWeight=True,allowPOS=(),withFlag=False))
+    writeFiles(top)
+    
+getTfidf()

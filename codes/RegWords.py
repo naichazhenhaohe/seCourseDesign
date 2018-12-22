@@ -1,15 +1,15 @@
 # -*- coding: utf-8 -*-
 """
-@author: hankai liu
+@author: hankai liu & kwonjiyong
 
 对新闻内容进行分词并去停用词
 
-3
+Step Three
+
 """
 
 import jieba
 import os
-import re
 
 def getFileNames():
     filePath = '../docs/target/'
@@ -17,12 +17,18 @@ def getFileNames():
     return files
 
 def saveSegfile(content,filepath):
-    with open(filepath,'wb') as f:
+    with open(filepath,'w') as f:
         f.write(content)
 
 def writeURL(url):
-    fp = open("../docs/urls.txt",'a+')
-    fp.write(url)
+    fp = open("../docs/urls.txt",'w',encoding='utf8')
+    while url.count('\n') > 0:
+        for i in url:
+            if i == '\n':
+                url.remove(i)
+    res = ''.join(url)
+    fp.write(res)
+    fp.close()
     
 def checkChinese(check_str):
     for ch in check_str:
@@ -32,32 +38,31 @@ def checkChinese(check_str):
 
 def readFile():
     files = getFileNames()
+    urls = []
     stopwords = [line.strip() for line in open('../docs/stopwordlist.txt','r',encoding='utf-8').readlines()]
     for file in files:
         filepath = '../docs/target/'+file
         afterfilepath = '../docs/segmented/' + file
-        with open(filepath,'rb') as fp:
-            keywords = fp.readline()
-            url = fp.readline()
-            writeURL(url.decode(encoding='utf-8'))
-            title = fp.readline()
-            content = fp.read()
-            content = content.replace("\n".encode(),"".encode())
-            content = content.replace("\r\n".encode(),"".encode())
-            content = content.replace("content: \r\r\r".encode(),"".encode())
-            content = content.replace("\r".encode(),"".encode())
-            content = content.replace("content".encode(), "".encode())
+        with open(filepath,'r',encoding='utf8') as fp:
+            lines = fp.readlines()
+            #windows
+            url = lines[4]
+            #linux
+            #url = lines[2]
+            urls.append(url[5:])
+            content = lines[-1]
             content = jieba.cut(content)
-#            content = re.sub(r'[0-9a-zA-Z]','',content.decode())
-#            content = re.sub(r' +', ' ', content)
             content2 = ""
             for item in content:
                 if item.isdigit():
                     continue
                 if item not in stopwords and item!='|' and checkChinese(item):
                     content2 = content2+item+' '
-            content2 = content2.encode()
-            content2 = keywords+url+title+content2
+            #windows
+            content2 = lines[0] + lines[2] + lines[4] + content2
+            #liunx
+            #content2 = lines[0] + lines[1] + lines[2] + content2
             saveSegfile(content2,afterfilepath)
+    writeURL(urls)
 
 readFile()

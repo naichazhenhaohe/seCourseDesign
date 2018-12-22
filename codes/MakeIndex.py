@@ -1,8 +1,5 @@
 import jieba.analyse
 import re
-import time
-
-
 def makeIndex(filepath):
     index = {}
     with open(filepath) as handle:
@@ -37,12 +34,12 @@ def count_tfidf(locations,keywords):
     location_dic = {}
     for i,location in enumerate( locations):#循环关键词所在的每篇文档
         temp = 0
-        word_line = getLine('../docs/wordList.txt',location)#word_list.txt的地址
+        word_line = getLine('D:/综合课设二/word_list.txt',location)#word_list.txt的地址
         words = word_line.split()
         for j,word in enumerate(words):#所在文章中的每个单词 0~19
             for top in keywords:
                 if word == top[0]:
-                    tf_idf_line = getLine("../docs/tfidfList.txt",location) #获取该篇文章20个词的tf行
+                    tf_idf_line = getLine("D:/综合课设二/word_list_tf.txt",location) #获取该篇文章20个词的tf行
                     tf_idf = tf_idf_line.split()
                     tf = float(tf_idf[j])*float(top[1]) #将word_list和keyword中的tf相乘后累加
                     temp = temp + tf
@@ -54,33 +51,52 @@ def print_location(location_sort):
     i = 0
     print("共搜索到:"+str(len(location_sort))+"个结果:")
     for location in location_sort:
-        url = getLine("../docs/urls.txt",location)
+        url = getLine("D:/综合课设二/urls.txt",location)
         if(url!=""):
             i = i+1
             print(url)
     print(i)
 
-word_list_path = '../docs/wordList.txt'
+#传入一个字典，返回一个一维list代表按tf-idf排序后的索引结果
+def sortlocation(location_dic):
+    sorted_location = {}
+    for key,value in location_dic.items():
+        if(value>0):
+            sorted_location[key] = value
+    after = sorted(sorted_location.values(),reverse=True)
+    after_sort = []
+    for i in after:
+        for item in sorted_location.items():
+            if i == item[1]:
+                after_sort.append(item[0])
+    return after_sort
+
+
+
+
+
+word_list_path = 'D:\综合课设二\word_list.txt'
 index = makeIndex(word_list_path)
 userinput = input("请输入关键字:")
-
-startTime = time.time()
 keywords = jieba.analyse.extract_tags(userinput,topK=5,withWeight=True,allowPOS=(),withFlag=False)
+print(keywords)
 locations = []
 
 for top in keywords:#检索每个词获取文档下标
     location = indexQuery(index,top[0])# top[0] str
     print(location)
-    locations.extend(location)
+    if location!=None:
+        locations.extend(location)
+    else:
+        print('对不起，您输入的关键词不在检索范围内!')
 
+print("locations:")
+print(locations)
 location_dic = count_tfidf(locations,keywords)
 
 print(location_dic)
 # location_sort = sorted(location_dic.keys(),reverse=True)
-location_sort = sorted(location_dic.keys())
-print(location_sort)
-print_location(location_sort)
-
-endTime = time.time()
-print('running time')
-print(endTime-startTime)
+# location_sort = sorted(location_dic.keys())
+sortedlocation = sortlocation(location_dic)
+# print(location_sort)
+print_location(sortedlocation)
