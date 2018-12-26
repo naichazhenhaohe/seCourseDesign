@@ -1,0 +1,63 @@
+a {
+  font-size: 1.5rem; 
+  color: #33a0c0;
+  text-decoration: none;
+}
+
+p,span {
+  color: #000;
+}
+
+section {
+  width: 70%;
+  margin: 5rem auto;
+}
+
+.main-input {
+  margin-top: 5rem;
+}
+
+.ipt {
+  margin: 0 auto;
+  display: inherit;
+  width: 35rem;
+  height: 48px;
+  line-height: 20px;
+  box-sizing: border-box;
+  padding: 14px 1.2rem;
+  box-shadow: 2px 0 5px 0 #fff;
+  background: rgba(28,31,33,.06);
+  border-radius: 8px;
+  border: 0;
+  color: #1c1f21;
+  font-size: 1.5rem;
+  outline: none;
+  letter-spacing: .2rem;
+}
+
+.ipt:focus {
+  border: 1px solid #d08fea;
+  outline: 0;
+  box-shadow: 0 0 5px 0px #d08fea;
+}
+
+#red {
+  color: red;
+}
+
+.item p {
+  text-indent: 2rem;
+}
+
+.hl {
+  color: #c500ff; 
+}
+
+.failed {
+  text-align: center;
+  font-size: 2rem;
+}
+
+.failed span {
+  display: block;
+}
